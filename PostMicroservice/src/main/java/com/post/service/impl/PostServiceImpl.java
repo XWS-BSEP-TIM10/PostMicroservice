@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -28,5 +29,10 @@ public class PostServiceImpl implements PostService {
                 new Binary(BsonBinarySubType.BINARY, image.getBytes()));
         return repo.insert(post);
 
+    }
+
+    @Override
+    public List<Post> getPostsFromUser(String id) {
+        return repo.getByOwnerId(id);
     }
 }

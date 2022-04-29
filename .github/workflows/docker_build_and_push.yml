@@ -14,7 +14,7 @@ jobs:
         name: Build & push Docker image
         with:
           dockerfile: PostMicroservice/Dockerfile
-          # directory: PostMicroservice
+          directory: PostMicroservice
           image: post-microservice
           tags: v1, latest
           registry: docker.io

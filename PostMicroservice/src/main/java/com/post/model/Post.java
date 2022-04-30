@@ -4,6 +4,9 @@ import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Document(collection = "Posts")
 public class Post {
     @Id
@@ -11,14 +14,23 @@ public class Post {
     private String ownerId;
     private String text;
     private Binary image;
+    private List<String> likes;
+    private List<String> dislikes;
+    private List<Comment> comments;
 
     public Post() {
+        this.likes = new ArrayList<>();
+        this.dislikes = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public Post(String ownerId, String text, Binary image) {
         this.ownerId = ownerId;
         this.text = text;
         this.image = image;
+        this.likes = new ArrayList<>();
+        this.dislikes = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public String getId() {
@@ -35,5 +47,17 @@ public class Post {
 
     public Binary getImage() {
         return image;
+    }
+
+    public List<String> getLikes() {
+        return likes;
+    }
+
+    public List<String> getDislikes() {
+        return dislikes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
     }
 }

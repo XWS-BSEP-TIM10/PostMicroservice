@@ -23,7 +23,7 @@ jobs:
         name: Build & push Docker image
         with:
           dockerfile: ${{env.PROJECT_DIR}}/Dockerfile
-          directory: ${{env.PROJECT_DIR}]
+          directory: ${{env.PROJECT_DIR}}
           image: ${{ secrets.DOCKER_USERNAME }}/${{env.IMAGE_NAME}}
           tags: latest
           registry: docker.io

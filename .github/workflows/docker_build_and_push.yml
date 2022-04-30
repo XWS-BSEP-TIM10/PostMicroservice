@@ -22,9 +22,9 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         with:
-          dockerfile: ${PROJECT_DIR}/Dockerfile
-          directory: ${PROJECT_DIR}
-          image: ${{ secrets.DOCKER_USERNAME }}/${IMAGE_NAME}
+          dockerfile: ${{env.PROJECT_DIR}}/Dockerfile
+          directory: ${{env.PROJECT_DIR}]
+          image: ${{ secrets.DOCKER_USERNAME }}/${{env.IMAGE_NAME}}
           tags: latest
           registry: docker.io
           username: ${{secrets.DOCKER_USERNAME}}

@@ -24,7 +24,7 @@ jobs:
         with:
           dockerfile: PostMicroservice/Dockerfile
           directory: PostMicroservice
-          image: post-microservice
+          image: xmlteam10/post-microservice
           tags: latest
           registry: docker.io
           username: ${{secrets.DOCKER_USERNAME}}

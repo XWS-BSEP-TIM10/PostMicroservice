@@ -61,4 +61,10 @@ public class PostController {
         postsResponseDTO.setImage(Base64.getEncoder().encodeToString(commentedPost.getImage().getData()));
         return ResponseEntity.ok(postsResponseDTO);
     }
+
+    @GetMapping(value="user/{id}/feed")
+    public void userFeed(@PathVariable String id) {
+
+
+    }
 }

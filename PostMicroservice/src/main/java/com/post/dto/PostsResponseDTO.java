@@ -1,11 +1,17 @@
 package com.post.dto;
 
+import com.post.model.Comment;
 import com.post.model.Post;
+
+import java.util.List;
 
 public class PostsResponseDTO {
     private String id;
     private String text;
     private String ownerId;
+    private List<String> likes;
+    private List<String> dislikes;
+    private List<Comment> comments;
     private String image;
 
     
@@ -13,6 +19,9 @@ public class PostsResponseDTO {
         this.id = post.getId();
         this.text = post.getText();
         this.ownerId = post.getOwnerId();
+        this.likes = post.getLikes();
+        this.dislikes = post.getDislikes();
+        this.comments = post.getComments();
     }
 
     public String getId() {
@@ -25,6 +34,30 @@ public class PostsResponseDTO {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    public List<String> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
+    }
+
+    public List<String> getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(List<String> dislikes) {
+        this.dislikes = dislikes;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public String getImage() {

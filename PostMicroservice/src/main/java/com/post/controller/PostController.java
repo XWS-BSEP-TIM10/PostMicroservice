@@ -1,7 +1,7 @@
 package com.post.controller;
 
 import com.post.dto.*;
-import com.post.model.Comment;
+import com.post.grpc.ConnectionsGrpcClient;
 import com.post.model.Post;
 import com.post.service.PostService;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final ConnectionsGrpcClient connectionsGrpcClient;
 
-    public PostController(PostService postService) {
+    public PostController(PostService postService, ConnectionsGrpcClient connectionsGrpcClient) {
         this.postService = postService;
+        this.connectionsGrpcClient = connectionsGrpcClient;
     }
 
     @PostMapping(value = "posts")
@@ -60,5 +62,12 @@ public class PostController {
         PostsResponseDTO postsResponseDTO = new PostsResponseDTO(commentedPost);
         postsResponseDTO.setImage(Base64.getEncoder().encodeToString(commentedPost.getImage().getData()));
         return ResponseEntity.ok(postsResponseDTO);
+    }
+
+    @GetMapping(value="user/{uuid}/feed")
+    public ResponseEntity<ConnectionsDto> userFeed(@PathVariable String uuid) {
+
+        return ResponseEntity.ok(new ConnectionsDto(connectionsGrpcClient.getConnections(uuid)));
+
     }
 }

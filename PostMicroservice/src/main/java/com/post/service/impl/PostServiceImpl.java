@@ -39,9 +39,10 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post addReaction(String postId, String userId, boolean like) {
+    public Post addReaction(String postId, String userId, Boolean like) {
         Optional<Post> post = repo.findById(postId);
         if(post.isEmpty()) return null;
+        if(like == null) return removeReaction(post.get(), userId);
         if(like) return addLike(post.get(), userId);
         return addDislike(post.get(), userId);
     }
@@ -56,6 +57,12 @@ public class PostServiceImpl implements PostService {
 
     private Post addComment(Post post, Comment newComment) {
         post.getComments().add(newComment);
+        return repo.save(post);
+    }
+
+    private Post removeReaction(Post post, String userId) {
+        post.getDislikes().removeIf(dislike -> dislike.equals(userId));
+        post.getLikes().removeIf(dislike -> dislike.equals(userId));
         return repo.save(post);
     }
 

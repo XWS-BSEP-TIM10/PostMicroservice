@@ -15,7 +15,7 @@ public interface PostService {
 
     List<Post> getPostsFromUser(String id);
 
-    Post addReaction(String postId, String userId, boolean like);
+    Post addReaction(String postId, String userId, Boolean like);
 
     Post addComment(String postId, String userId, String text);
 }

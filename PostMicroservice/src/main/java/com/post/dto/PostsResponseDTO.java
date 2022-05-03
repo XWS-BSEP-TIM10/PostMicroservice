@@ -12,9 +12,10 @@ public class PostsResponseDTO {
     private List<String> likes;
     private List<String> dislikes;
     private List<Comment> comments;
+    private String creationDate;
     private String image;
 
-    
+
     public PostsResponseDTO(Post post) {
         this.id = post.getId();
         this.text = post.getText();
@@ -66,5 +67,13 @@ public class PostsResponseDTO {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "Posts")
@@ -14,6 +15,7 @@ public class Post {
     private String ownerId;
     private String text;
     private Binary image;
+    private Date creationDate;
     private List<String> likes;
     private List<String> dislikes;
     private List<Comment> comments;
@@ -22,6 +24,7 @@ public class Post {
         this.likes = new ArrayList<>();
         this.dislikes = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.creationDate = new Date();
     }
 
     public Post(String ownerId, String text, Binary image) {
@@ -31,6 +34,7 @@ public class Post {
         this.likes = new ArrayList<>();
         this.dislikes = new ArrayList<>();
         this.comments = new ArrayList<>();
+        this.creationDate = new Date();
     }
 
     public String getId() {
@@ -59,5 +63,9 @@ public class Post {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
     }
 }

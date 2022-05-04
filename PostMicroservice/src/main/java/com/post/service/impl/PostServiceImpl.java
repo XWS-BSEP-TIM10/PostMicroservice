@@ -36,6 +36,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Post addPost(NewPostRequestDTO newPostRequestDTO, byte[] image) {
+        Post post = new Post(newPostRequestDTO.getOwnerId(),
+                newPostRequestDTO.getText(),
+                new Binary(BsonBinarySubType.BINARY, image));
+        return repo.insert(post);
+    }
+
+    @Override
     public List<Post> getPostsFromUser(String id) {
         return repo.findByOwnerId(id, Sort.by(Sort.Direction.DESC, "creationDate"));
     }

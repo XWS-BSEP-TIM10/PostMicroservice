@@ -19,4 +19,6 @@ public interface PostService {
     Post addComment(String postId, String userId, String text);
 
     List<Post> getFeed(String id);
+
+    public Post addPost(NewPostRequestDTO newPostRequestDTO, byte[] image);
 }

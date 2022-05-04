@@ -10,6 +10,11 @@ public class NewPostRequestDTO {
     public NewPostRequestDTO() {
     }
 
+    public NewPostRequestDTO(String ownerId, String text) {
+        this.ownerId = ownerId;
+        this.text = text;
+    }
+
     public String getOwnerId() {
         return ownerId;
     }

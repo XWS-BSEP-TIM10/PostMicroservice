@@ -40,12 +40,27 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         NewPostRequestDTO newPostRequestDTO = new NewPostRequestDTO(request.getOwnerId(), request.getText());
         Post newPost = postService.addPost(newPostRequestDTO, request.getImage().toByteArray());
         AddPostResponseProto addPostResponseProto = AddPostResponseProto.newBuilder()
-                                                    .setId(newPost.getId())
-                                                    .setStatus("Status 200")
-                                                    .build();
+                .setId(newPost.getId())
+                .setStatus("Status 200")
+                .build();
 
         responseObserver.onNext(addPostResponseProto);
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void commentPost(CommentPostProto request, StreamObserver<CommentPostResponseProto> responseObserver) {
+
+        Post post = postService.addComment(request.getPostId(), request.getUserId(), request.getComment());
+        CommentPostResponseProto commentPostResponseProto;
+
+        if (post == null)
+            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 400").build();
+        else
+            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 200").build();
+
+        responseObserver.onNext(commentPostResponseProto);
+        responseObserver.onCompleted();
+
     }
+}

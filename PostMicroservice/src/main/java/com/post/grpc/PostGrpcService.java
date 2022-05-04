@@ -102,4 +102,33 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         responseObserver.onNext(userPostsResponseProto);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void getUserFeed(UserPostsProto request, StreamObserver<UserPostsResponseProto> responseObserver) {
+        List<Post> posts = postService.getFeed(request.getUserId());
+        List<PostProto> postsProto = new ArrayList<>();
+        for (Post post : posts) {
+            List<CommentProto> commentsProto = new ArrayList<>();
+            for(Comment c : post.getComments()){
+                commentsProto.add(CommentProto.newBuilder().setUserId(c.getUserId()).setText(c.getText()).build());
+            }
+            PostProto postProto = PostProto.newBuilder()
+                    .setPostId(post.getId())
+                    .setText(post.getText())
+                    .setOwnerId(post.getOwnerId())
+                    .setCreationDate(iso8601Formater.format(post.getCreationDate()))
+                    .setImage(Base64.getEncoder().encodeToString(post.getImage().getData()))
+                    .addAllLikes(post.getLikes())
+                    .addAllComments(commentsProto)
+                    .addAllDislikes(post.getDislikes())
+                    .build();
+            postsProto.add(postProto);
+        }
+        UserPostsResponseProto userPostsResponseProto = UserPostsResponseProto.newBuilder()
+                .addAllPosts(postsProto)
+                .build();
+
+        responseObserver.onNext(userPostsResponseProto);
+        responseObserver.onCompleted();
+    }
 }

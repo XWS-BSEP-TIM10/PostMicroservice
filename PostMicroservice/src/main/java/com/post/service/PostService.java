@@ -16,9 +16,11 @@ public interface PostService {
 
     Post addReaction(String postId, String userId, Boolean like);
 
+    Post removeReaction(String postId, String userId);
+
     Post addComment(String postId, String userId, String text);
 
     List<Post> getFeed(String id);
 
-    public Post addPost(NewPostRequestDTO newPostRequestDTO, byte[] image);
+    Post addPost(NewPostRequestDTO newPostRequestDTO, byte[] image);
 }

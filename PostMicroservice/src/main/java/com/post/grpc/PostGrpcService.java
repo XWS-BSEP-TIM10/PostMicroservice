@@ -30,7 +30,7 @@ import java.util.List;
 public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase {
 
     private final PostService postService;
-    private static final SimpleDateFormat iso8601Formater = new SimpleDateFormat("dd/MM/yyyy");
+    private static final SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     @Autowired
     public PostGrpcService(PostService postService) {
@@ -111,7 +111,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                     .setPostId(post.getId())
                     .setText(post.getText())
                     .setOwnerId(post.getOwnerId())
-                    .setCreationDate(iso8601Formater.format(post.getCreationDate()))
+                    .setCreationDate(iso8601Formatter.format(post.getCreationDate()))
                     .setImage(Base64.getEncoder().encodeToString(post.getImage().getData()))
                     .addAllLikes(post.getLikes())
                     .addAllComments(commentsProto)
@@ -140,7 +140,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                     .setPostId(post.getId())
                     .setText(post.getText())
                     .setOwnerId(post.getOwnerId())
-                    .setCreationDate(iso8601Formater.format(post.getCreationDate()))
+                    .setCreationDate(iso8601Formatter.format(post.getCreationDate()))
                     .setImage(Base64.getEncoder().encodeToString(post.getImage().getData()))
                     .addAllLikes(post.getLikes())
                     .addAllComments(commentsProto)

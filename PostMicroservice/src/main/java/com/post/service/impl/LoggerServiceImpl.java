@@ -47,11 +47,11 @@ public class LoggerServiceImpl implements LoggerService {
 
     @Override
     public void allPostGetSuccessfully(String userId) {
-        logger.info("User: {} posts get successfully.", userId);
+        logger.info("User: {} posts gotten successfully.", userId);
     }
 
     @Override
     public void feedGetSuccessfully(String userId) {
-        logger.info("User: {} feed get successfully.", userId);
+        logger.info("User: {} feed gotten successfully.", userId);
     }
 }

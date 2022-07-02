@@ -5,12 +5,9 @@ import com.post.dto.NewPostRequestDTO;
 import com.post.dto.NewPostResponseDTO;
 import com.post.dto.PostsResponseDTO;
 import com.post.dto.ReactionDTO;
-import com.post.grpc.ConnectionsGrpcClient;
 import com.post.mapper.PostMapper;
 import com.post.model.Post;
-import com.post.service.LoggerService;
 import com.post.service.PostService;
-import com.post.service.impl.LoggerServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +33,7 @@ public class PostController {
     private final PostService postService;
 
 
-    public PostController(PostService postService, ConnectionsGrpcClient connectionsGrpcClient) {
+    public PostController(PostService postService) {
         this.postService = postService;
     }
 

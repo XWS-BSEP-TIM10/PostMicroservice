@@ -33,7 +33,8 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
 
     private final PostService postService;
     private final LoggerService loggerService;
-    private static final SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private final SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private static final String STATUS_OK = "Status 200";
 
     @Autowired
     public PostGrpcService(PostService postService) {
@@ -50,9 +51,9 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         if (post == null) {
             loggerService.reactionAddingFailed(request.getUserId(), request.getPostId());
             addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus("Status 400").build();
-        }else {
+        } else {
             loggerService.reactionAddedSuccessfully(request.getUserId(), request.getPostId());
-            addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus("Status 200").build();
+            addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
         }
         responseObserver.onNext(addReactionResponseProto);
         responseObserver.onCompleted();
@@ -68,9 +69,9 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         if (post == null) {
             loggerService.reactionRemovingFailed(request.getUserId(), request.getPostId());
             responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 404").build();
-        }else {
+        } else {
             loggerService.reactionRemovedSuccessfully(request.getUserId(), request.getPostId());
-            responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 200").build();
+            responseProto = RemoveReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
         }
         responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
@@ -83,7 +84,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         Post newPost = postService.addPost(newPostRequestDTO, request.getImage().toByteArray());
         AddPostResponseProto addPostResponseProto = AddPostResponseProto.newBuilder()
                 .setId(newPost.getId())
-                .setStatus("Status 200")
+                .setStatus(STATUS_OK)
                 .build();
         loggerService.postCreatedSuccessfully(request.getOwnerId());
         responseObserver.onNext(addPostResponseProto);
@@ -101,7 +102,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
             commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 400").build();
         } else {
             loggerService.commentAddedSuccessfully(request.getUserId(), request.getPostId());
-            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 200").build();
+            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus(STATUS_OK).build();
         }
         responseObserver.onNext(commentPostResponseProto);
         responseObserver.onCompleted();

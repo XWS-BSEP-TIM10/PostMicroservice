@@ -1,6 +1,7 @@
 package com.post.grpc;
 
 import com.post.dto.NewPostRequestDTO;
+import com.post.exception.UserIsBlockedException;
 import com.post.model.Comment;
 import com.post.model.Post;
 import com.post.service.LoggerService;
@@ -44,16 +45,19 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
 
     @Override
     public void addReaction(AddReactionProto request, StreamObserver<AddReactionResponseProto> responseObserver) {
-
-        Post post = postService.addReaction(request.getPostId(), request.getUserId(), request.getLike());
         AddReactionResponseProto addReactionResponseProto;
-
-        if (post == null) {
+        try {
+            Post post = postService.addReaction(request.getPostId(), request.getUserId(), request.getLike());
+            if (post == null) {
+                loggerService.reactionAddingFailed(request.getUserId(), request.getPostId());
+                addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus("Status 400").build();
+            } else {
+                loggerService.reactionAddedSuccessfully(request.getUserId(), request.getPostId());
+                addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
+            }
+        } catch (UserIsBlockedException userIsBlockedException) {
             loggerService.reactionAddingFailed(request.getUserId(), request.getPostId());
             addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus("Status 400").build();
-        } else {
-            loggerService.reactionAddedSuccessfully(request.getUserId(), request.getPostId());
-            addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
         }
         responseObserver.onNext(addReactionResponseProto);
         responseObserver.onCompleted();
@@ -62,16 +66,19 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
 
     @Override
     public void removeReaction(RemoveReactionProto request, StreamObserver<RemoveReactionResponseProto> responseObserver) {
-
-        Post post = postService.removeReaction(request.getPostId(), request.getUserId());
         RemoveReactionResponseProto responseProto;
-
-        if (post == null) {
+        try {
+            Post post = postService.removeReaction(request.getPostId(), request.getUserId());
+            if (post == null) {
+                loggerService.reactionRemovingFailed(request.getUserId(), request.getPostId());
+                responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 404").build();
+            } else {
+                loggerService.reactionRemovedSuccessfully(request.getUserId(), request.getPostId());
+                responseProto = RemoveReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
+            }
+        } catch (UserIsBlockedException userIsBlockedException) {
             loggerService.reactionRemovingFailed(request.getUserId(), request.getPostId());
-            responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 404").build();
-        } else {
-            loggerService.reactionRemovedSuccessfully(request.getUserId(), request.getPostId());
-            responseProto = RemoveReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
+            responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 400").build();
         }
         responseObserver.onNext(responseProto);
         responseObserver.onCompleted();
@@ -93,16 +100,21 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
 
     @Override
     public void commentPost(CommentPostProto request, StreamObserver<CommentPostResponseProto> responseObserver) {
-
-        Post post = postService.addComment(request.getPostId(), request.getUserId(), request.getComment());
         CommentPostResponseProto commentPostResponseProto;
+        try {
+            Post post = postService.addComment(request.getPostId(), request.getUserId(), request.getComment());
 
-        if (post == null) {
+
+            if (post == null) {
+                loggerService.commentAddingFailed(request.getUserId(), request.getPostId());
+                commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 400").build();
+            } else {
+                loggerService.commentAddedSuccessfully(request.getUserId(), request.getPostId());
+                commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus(STATUS_OK).build();
+            }
+        } catch (UserIsBlockedException userIsBlockedException) {
             loggerService.commentAddingFailed(request.getUserId(), request.getPostId());
-            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 400").build();
-        } else {
-            loggerService.commentAddedSuccessfully(request.getUserId(), request.getPostId());
-            commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus(STATUS_OK).build();
+            commentPostResponseProto = CommentPostResponseProto.newBuilder().setStatus("Status 400").build();
         }
         responseObserver.onNext(commentPostResponseProto);
         responseObserver.onCompleted();

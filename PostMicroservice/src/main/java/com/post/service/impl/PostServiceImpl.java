@@ -1,6 +1,7 @@
 package com.post.service.impl;
 
 import com.post.dto.NewPostRequestDTO;
+import com.post.exception.UserIsBlockedException;
 import com.post.grpc.ConnectionsGrpcClient;
 import com.post.model.Comment;
 import com.post.model.Post;
@@ -52,6 +53,8 @@ public class PostServiceImpl implements PostService {
     public Post addReaction(String postId, String userId, Boolean like) {
         Optional<Post> post = repo.findById(postId);
         if (post.isEmpty() || like == null) return null;
+        if (isBlocked(post.get().getOwnerId(), userId))
+            throw new UserIsBlockedException();
         if (like) return addLike(post.get(), userId);
         return addDislike(post.get(), userId);
     }
@@ -60,6 +63,8 @@ public class PostServiceImpl implements PostService {
     public Post addComment(String postId, String userId, String text) {
         Optional<Post> post = repo.findById(postId);
         if (post.isEmpty()) return null;
+        if (isBlocked(post.get().getOwnerId(), userId))
+            throw new UserIsBlockedException();
         Comment newComment = new Comment(userId, text);
         return addComment(post.get(), newComment);
     }
@@ -79,6 +84,8 @@ public class PostServiceImpl implements PostService {
     public Post removeReaction(String postId, String userId) {
         Optional<Post> post = repo.findById(postId);
         if (post.isEmpty()) return null;
+        if (isBlocked(post.get().getOwnerId(), userId))
+            throw new UserIsBlockedException();
         post.get().getDislikes().removeIf(dislike -> dislike.equals(userId));
         post.get().getLikes().removeIf(dislike -> dislike.equals(userId));
         return repo.save(post.get());
@@ -96,5 +103,10 @@ public class PostServiceImpl implements PostService {
         if (!post.getDislikes().contains(userId))
             post.getDislikes().add(userId);
         return repo.save(post);
+    }
+
+    private boolean isBlocked(String initiatorId, String receiverId) {
+        String connectionStatus = connectionsGrpcClient.getConnectionStatus(initiatorId, receiverId);
+        return connectionStatus.equals("BLOCKED");
     }
 }

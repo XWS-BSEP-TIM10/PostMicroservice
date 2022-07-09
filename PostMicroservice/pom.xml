@@ -70,6 +70,17 @@
             <artifactId>guava</artifactId>
             <version>30.0-android</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-spring-jaeger-web-starter</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-grpc</artifactId>
+            <version>0.2.3</version>
+        </dependency>
     </dependencies>
 
     <build>

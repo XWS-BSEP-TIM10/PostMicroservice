@@ -3,26 +3,16 @@ package com.post.grpc;
 import com.post.dto.NewPostRequestDTO;
 import com.post.exception.UserIsBlockedException;
 import com.post.model.Comment;
+import com.post.model.Event;
 import com.post.model.Post;
+import com.post.service.EventService;
 import com.post.service.LoggerService;
 import com.post.service.PostService;
 import com.post.service.impl.LoggerServiceImpl;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
-import proto.AddPostProto;
-import proto.AddPostResponseProto;
-import proto.AddReactionProto;
-import proto.AddReactionResponseProto;
-import proto.CommentPostProto;
-import proto.CommentPostResponseProto;
-import proto.CommentProto;
-import proto.PostGrpcServiceGrpc;
-import proto.PostProto;
-import proto.RemoveReactionProto;
-import proto.RemoveReactionResponseProto;
-import proto.UserPostsProto;
-import proto.UserPostsResponseProto;
+import proto.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,12 +24,14 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
 
     private final PostService postService;
     private final LoggerService loggerService;
+    private final EventService eventService;
     private final SimpleDateFormat iso8601Formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     private static final String STATUS_OK = "Status 200";
 
     @Autowired
-    public PostGrpcService(PostService postService) {
+    public PostGrpcService(PostService postService, EventService eventService) {
         this.postService = postService;
+        this.eventService = eventService;
         this.loggerService = new LoggerServiceImpl(this.getClass());
     }
 
@@ -52,6 +44,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                 loggerService.reactionAddingFailed(request.getUserId(), request.getPostId());
                 addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus("Status 400").build();
             } else {
+                eventService.save(new Event("User with id: " + request.getUserId() + " successfully added reaction to post with id: " + request.getPostId()));
                 loggerService.reactionAddedSuccessfully(request.getUserId(), request.getPostId());
                 addReactionResponseProto = AddReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
             }
@@ -73,6 +66,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                 loggerService.reactionRemovingFailed(request.getUserId(), request.getPostId());
                 responseProto = RemoveReactionResponseProto.newBuilder().setStatus("Status 404").build();
             } else {
+                eventService.save(new Event("User with id: " + request.getUserId() + " successfully removed reaction from post with id: " + request.getPostId()));
                 loggerService.reactionRemovedSuccessfully(request.getUserId(), request.getPostId());
                 responseProto = RemoveReactionResponseProto.newBuilder().setStatus(STATUS_OK).build();
             }
@@ -93,6 +87,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                 .setId(newPost.getId())
                 .setStatus(STATUS_OK)
                 .build();
+        eventService.save(new Event("User with id: " + request.getOwnerId() + " successfully added new post."));
         loggerService.postCreatedSuccessfully(request.getOwnerId());
         responseObserver.onNext(addPostResponseProto);
         responseObserver.onCompleted();
@@ -109,6 +104,7 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
                 loggerService.commentAddingFailed(request.getUserId(), request.getPostId());
                 commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus("Status 400").build();
             } else {
+                eventService.save(new Event("User with id: " + request.getUserId() + " successfully added comment to post with id: " + request.getPostId()));
                 loggerService.commentAddedSuccessfully(request.getUserId(), request.getPostId());
                 commentPostResponseProto = CommentPostResponseProto.newBuilder().setComment(request.getComment()).setStatus(STATUS_OK).build();
             }
@@ -178,4 +174,17 @@ public class PostGrpcService extends PostGrpcServiceGrpc.PostGrpcServiceImplBase
         responseObserver.onNext(userPostsResponseProto);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void getPostEvents(PostEventProto request, StreamObserver<PostEventResponseProto> responseObserver) {
+
+        List<String> events = new ArrayList<>();
+        for(Event event : eventService.findAll()){events.add(event.getDescription());}
+
+        PostEventResponseProto responseProto = PostEventResponseProto.newBuilder().addAllEvents(events).build();
+
+        responseObserver.onNext(responseProto);
+        responseObserver.onCompleted();
+    }
+
 }
